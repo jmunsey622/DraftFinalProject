@@ -1,0 +1,71 @@
+
+import requests
+
+api_key = '23550ab0a8e8a2fc5ccf4359f6b783c4'
+
+def getData(zipCode=None, cityName=None):
+   
+    base_Url = "http://api.openweathermap.org/data/2.5/weather"
+   
+    
+   
+    if zipCode is not None:
+       
+        base_Url += "?zip="+str(zipCode)+"&units=imperial"
+
+    else:
+        base_Url += "?q="+str(cityName)+"&units=imperial"
+    
+    
+    user_Url = base_Url +"&appid=" + api_key 
+   
+    response = requests.get(user_Url)
+   
+    return response
+
+def result(resp):
+    
+    if resp.status_code == 200:
+        data = resp.json()
+        print('Succesfully connected to the server')
+        print(data['name'])
+        print(f"""{data['name']} Weather Forecast:
+        There will be {data['weather'][0]['description']} with wind speed of {data['wind']['speed']}.
+        Visibility will be {data['visibility']}.
+        Min. Temp will be {data['main']['temp_min']} and max will be {data['main']['temp_max']}.
+        """)
+
+    else:
+        print("Invalid entry, zip code or city not found: error code",resp.status_code)
+
+def main():
+ 
+    while True:
+
+        prompt =int(input("Your options :\n1. By Zip Code\n2. By City Name\n3. Exit\n"))
+        if prompt == 1:
+          
+            try:
+                queryData = int(input("Enter zip code : "))
+                
+                prompt = getData(queryData,None)
+                result(prompt)
+                
+            except Exception as ex:
+                print("Error, Connection Failed :",ex)
+        elif prompt == 2:
+            try:
+                queryData = input("Enter city name : ")
+             
+                prompt = getData(None,queryData)
+                result(prompt)
+            except Exception as ex:
+                print("Error, Connection Failed : ",ex)
+        elif prompt == 3:
+            break
+        else:
+            print("Invalid Choice..\n")
+
+if __name__=="__main__":
+  
+    main()
